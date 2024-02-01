@@ -1,0 +1,74 @@
+<div class="discord-layout row">
+  <nav class="discord-sidebar col-3">
+    <?php if (empty($categories)) : ?>
+      <h2><a href="index.php?page=add_category">Créer votre première catégorie</a></h2>
+    <?php else : ?>
+      <div class="plus">
+        <h2>Catégories</h2> <a href="index.php?page=add_category"><img src="./assets/img/plus.png" alt="plus"></a>
+      </div>
+
+      <?php foreach ($categories as $category) : ?>
+        <div class="category">
+          <div class="plus">
+            <h3>
+              <?= htmlspecialchars($category['category']->getName()) ?></h3>
+            <a href="index.php?page=add_room&category_id=<?= htmlspecialchars($category['category']->getId()) ?>">
+              <img src="./assets/img/plus.png" alt="plus">
+            </a>
+          </div>
+
+          <?php if (isset($category['rooms']) && is_array($category['rooms'])) : ?>
+            <?php foreach ($category['rooms'] as $room) : ?>
+              <a class="chat-room-link" href="index.php?page=chat&room_id=<?= htmlspecialchars($room->getId()) ?? '' ?>">
+                <?= htmlspecialchars($room->getName()) ?? '' ?>
+              </a>
+            <?php endforeach; ?>
+          <?php endif; ?>
+
+        </div>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </nav>
+
+  <?php $isAnyMessagePinned = false;
+  foreach ($messages as $message) {
+    if ($message->isPinned()) {
+      $isAnyMessagePinned = true;
+      break;
+    }
+  } ?>
+
+  <div class="discord-main-content col-9">
+  <?php if (!isset($_GET['room_id'])) : ?>
+      <div class="choice">Choisissez un salon.</div>
+  <?php else : ?>
+      <?php if (empty($messages)) : ?>
+        <div class="text">
+          <p class="text-info">Aucun message à afficher</p>
+        </div>
+      <?php else : ?>
+        <?php foreach ($messages as $message) : ?>
+            <div class="chat-messages <?= $message->isPinned() ? 'pinned-message' : '' ?>">
+              <p title="<?= $message->getCreatedAt()->format('d m Y, H:i:s') ?>">
+                [<?= $message->getCreatedAt()->format('H:i') ?>]
+                &nbsp;
+                <?= htmlspecialchars($message->getContent()) ?></p>
+              <!-- Epingler -->
+              <div class="pin <?= $isAnyMessagePinned && !$message->isPinned() ? 'hide-pin' : '' ?>"><a href="index.php?page=toggle_pin&message_id=<?= $message->getId() ?>" class="pin-button">
+                  <?= $message->isPinned() ? 'Désépingler' : 'Épingler' ?>
+                </a>
+              </div>
+            </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+          <form class="chat-input" method="POST">
+            <label for="message">Message</label>
+            <input id="message" type="text" name="message" />
+            <button type="submit">Envoyer</button>
+          </form>
+        </div>
+
+      
+      <?php endif; ?>
+  </div>
+</div>

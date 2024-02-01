@@ -1,0 +1,23 @@
+<div class="add">
+  <form method="POST" >
+
+    <?php foreach ($this->errors as $error) : ?>
+      <p class="text-danger"><?= htmlspecialchars($error) ?></p>
+    <?php endforeach; ?>
+
+
+   
+    <fieldset>
+    <?php if ($category): ?>
+      <legend>Ajouter un salon à la catégorie <i><?= htmlspecialchars($category->getName()) ?></i></legend>
+      
+      <label for="name">Nom</label>
+      <input type="text" name="name" id="name" value="">
+    </fieldset>
+
+    <button type="submit">Valider</button>
+    <?php else: ?>
+      <h1> Aucune catégorie sélectionnée </h1>
+      <?php endif; ?>
+  </form>
+</div>
